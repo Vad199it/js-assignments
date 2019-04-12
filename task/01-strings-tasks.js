@@ -2,7 +2,7 @@
 
 /********************************************************************************************
  *                                                                                          *
- * Plese read the following tutorial before implementing tasks:                             *
+ * Перед началом работы с таском, пожалуйста ознакомьтесь с туториалом:                     *
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String  *
  *                                                                                          *
  ********************************************************************************************/
@@ -10,7 +10,7 @@
 
 
 /**
- * Returns the result of concatenation of two strings.
+ * Возвращает результат конкатенации двух строк
  *
  * @param {string} value1
  * @param {string} value2
@@ -22,12 +22,12 @@
  *   '',  'bb'  => 'bb'
  */
 function concatenateStrings(value1, value2) {
-    throw new Error('Not implemented');
+    return value1 + value2;
 }
 
 
 /**
- * Returns the length of given string.
+ * Возвращает длинну строки
  *
  * @param {string} value
  * @return {number}
@@ -38,12 +38,12 @@ function concatenateStrings(value1, value2) {
  *   ''      => 0
  */
 function getStringLength(value) {
-    throw new Error('Not implemented');
+    return value.length;
 }
 
 /**
- * Returns the result of string template and given parameters firstName and lastName.
- * Please do not use concatenation, use template string :
+ * Возвращает строку образованную на основе шаблона и входных параметров firstName и lastName.
+ * Важно! Вместо использования конкатенации, используйте шаблоны :
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/template_strings
  *
  * @param {string} firstName
@@ -55,11 +55,11 @@ function getStringLength(value) {
  *   'Chuck','Norris'  => 'Hello, Chuck Norris!'
  */
 function getStringFromTemplate(firstName, lastName) {
-    throw new Error('Not implemented');
+    return `Hello, ${firstName} ${lastName}!`
 }
 
 /**
- * Extracts a name from template string 'Hello, First_Name Last_Name!'.
+ * Возвращает имя(First_Name) и фамилию(Last_Name) из шаблона 'Hello, First_Name Last_Name!'.
  *
  * @param {string} value
  * @return {string}
@@ -69,12 +69,13 @@ function getStringFromTemplate(firstName, lastName) {
  *   'Hello, Chuck Norris!' => 'Chuck Norris'
  */
 function extractNameFromTemplate(value) {
-    throw new Error('Not implemented');
+    let arr = value.split(' ');
+    return arr[arr.length - 2] + " " + arr[arr.length - 1].slice(0, -1)
 }
 
 
 /**
- * Returns a first char of the given string.
+ * Возвращает первый символ полученной строки
  *
  * @param {string} value
  * @return {string}
@@ -84,11 +85,11 @@ function extractNameFromTemplate(value) {
  *   'cat'       => 'c'
  */
 function getFirstChar(value) {
-    throw new Error('Not implemented');
+    return value[0];
 }
 
 /**
- * Removes a leading and trailing whitespace characters from string.
+ * Удаляет крайние левые и правые символы пробела или табуляции из строки.
  *
  * @param {string} value
  * @return {string}
@@ -99,11 +100,11 @@ function getFirstChar(value) {
  *   '\tHello, World! ' => 'Hello, World!'
  */
 function removeLeadingAndTrailingWhitespaces(value) {
-    throw new Error('Not implemented');
+    return value.trim();
 }
 
 /**
- * Returns a string that repeated the specified number of times.
+ * Возвращает заданную строку, повторяющуюся заданное число раз
  *
  * @param {string} value
  * @param {string} count
@@ -114,11 +115,14 @@ function removeLeadingAndTrailingWhitespaces(value) {
  *   'cat', 3 => 'catcatcat'
  */
 function repeatString(value, count) {
-    throw new Error('Not implemented');
+    var res = "";
+    for (var i = 0; i < +count; i++)
+        res += value;
+    return res;
 }
 
 /**
- * Remove the first occurrence of string inside another string
+ * Удаляет первую встретившуюся последовательность симвоов из строки
  * 
  * @param {string} str
  * @param {string} value
@@ -130,11 +134,13 @@ function repeatString(value, count) {
  *   'ABABAB','BA' => 'ABAB'
  */
 function removeFirstOccurrences(str, value) {
-    throw new Error('Not implemented');
+    let pos = str.indexOf(value, 0);
+    let temp = str.slice(0, pos);
+    return str = temp + str.slice(pos + value.length);
 }
 
 /**
- * Remove the first and last angle brackets from tag string
+ * Удаляет первую и последнюю угловую скобку в строке (тэге)
  *
  * @param {string} str
  * @return {string}
@@ -145,12 +151,12 @@ function removeFirstOccurrences(str, value) {
  *   '<a>' => 'a'
  */
 function unbracketTag(str) {
-    throw new Error('Not implemented');
+    return str.slice(str.indexOf('<')+1, str.lastIndexOf('>'));
 }
 
 
 /**
- * Converts all characters of the specified string into the upper case
+ * Переводит все символы в строке в верхний регистр
  *
  * @param {string} str
  * @return {string}
@@ -160,11 +166,11 @@ function unbracketTag(str) {
  *  'abcdefghijklmnopqrstuvwxyz' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
  */
 function convertToUpperCase(str) {
-    throw new Error('Not implemented');
+    return str.toUpperCase();
 }
 
 /**
- * Extracts e-mails from single string with e-mails list delimeted by semicolons
+ * Из строки адресов электронной почты разделенных точкой с запятой, образует массив этих адресов
  *
  * @param {string} str
  * @return {array}
@@ -174,12 +180,12 @@ function convertToUpperCase(str) {
  *   'info@gmail.com' => ['info@gmail.com']
  */
 function extractEmails(str) {
-    throw new Error('Not implemented');
+    return str.split(';')
 }
 
 /**
- * Returns the string representation of rectangle with specified width and height
- * using pseudograhic chars
+ * Возвращает строковое предстваление фигуры с заданной шириной и высотой
+ * используя псевдографические символы: '┌', '─', '┐', '|', '└', '┘'.
  *
  * @param {number} width
  * @param {number} height
@@ -201,12 +207,26 @@ function extractEmails(str) {
  *
  */
 function getRectangleString(width, height) {
-    throw new Error('Not implemented');
+    var newWidth = width - 2, newHeight = height - 2;
+    var str = '┌';
+    for (let i = 0; i < newWidth; i++)
+        str += '─';
+    str += '┐\n';
+    for (let i = 0; i < newHeight; i++) {
+        str += '│';
+        for (let j = 0; j < newWidth; j++)
+            str += ' ';
+        str += '│\n';    
+    }
+    str += '└';
+    for (let i = 0; i < newWidth; i++)
+        str += '─';
+    str += '┘\n';
+    return str;
 }
 
-
 /**
- * Encode specified string with ROT13 cipher
+ * Закодировать указанную строку при помощи ROT13 шифрования (*)
  * See details:  https://en.wikipedia.org/wiki/ROT13
  *
  * @param {string} str
@@ -220,12 +240,20 @@ function getRectangleString(width, height) {
  *   'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' => 'NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm'
  *
  */
+function rot13(str) {
+    var input     = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    var output    = 'NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm';
+    var index     = x => input.indexOf(x);
+    var translate = x => index(x) > -1 ? output[index(x)] : x;
+    return str.split('').map(translate).join('');
+  }
 function encodeToRot13(str) {
-    throw new Error('Not implemented');
+    return rot13(str);
 }
 
+
 /**
- * Returns true if the value is string; otherwise false.
+ * Возвращает булевое значение, является ли входной параметр строкой
  * @param {string} value
  * @return {boolean}
  *
@@ -238,14 +266,15 @@ function encodeToRot13(str) {
  *   isString(new String('test')) => true
  */
 function isString(value) {
-    throw new Error('Not implemented');
+    return ({}.toString.call(value).slice(8, -1).toUpperCase()=="String".toUpperCase());
 }
 
 
+
 /**
- * Returns playid card id.
+ * Возвращает id игровой карты
  * 
- * Playing cards inittial deck inclides the cards in the following order:
+ * Исходная доска игровых карт представлена следующим порядком строк:
  * 
  *  'A♣','2♣','3♣','4♣','5♣','6♣','7♣','8♣','9♣','10♣','J♣','Q♣','K♣',
  *  'A♦','2♦','3♦','4♦','5♦','6♦','7♦','8♦','9♦','10♦','J♦','Q♦','K♦',
@@ -267,7 +296,13 @@ function isString(value) {
  *   'K♠' => 51
  */
 function getCardId(value) {
-    throw new Error('Not implemented');
+    let arr = [
+        'A♣','2♣','3♣','4♣','5♣','6♣','7♣','8♣','9♣','10♣','J♣','Q♣','K♣',
+        'A♦','2♦','3♦','4♦','5♦','6♦','7♦','8♦','9♦','10♦','J♦','Q♦','K♦',
+        'A♥','2♥','3♥','4♥','5♥','6♥','7♥','8♥','9♥','10♥','J♥','Q♥','K♥',
+        'A♠','2♠','3♠','4♠','5♠','6♠','7♠','8♠','9♠','10♠','J♠','Q♠','K♠' 
+   ];
+    return arr.indexOf(value);
 }
 
 

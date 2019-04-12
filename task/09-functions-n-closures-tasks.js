@@ -2,7 +2,7 @@
 
 /**********************************************************************************************
  *                                                                                            *
- * Plese read the following tutorial before implementing tasks:                               *
+ * Перед началом работы с заданием, пожалуйста ознакомьтесь с туториалом:                     *
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions                    *
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function  *
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/arguments      *
@@ -12,10 +12,11 @@
 
 
 /**
- * Returns the functions composition of two specified functions f(x) and g(x).
- * The result of compose is to be a function of one argument, (lets call the argument x),
- * which works like applying function f to the result of applying function g to x, i.e.
- *  getComposition(f,g)(x) = f(g(x))
+ *  Возвращает функцию, которая является композицией двух заданных функций f (x) и g (x).
+ *  Результатом должена быть функцией одного аргумента (позволяет вызывать аргумент x),
+ *  который работает как применение функции f к результату применения функции g к x, т.е.
+ *  getComposition (f, g) (x) = f (g (x))
+ *
  *
  * @param {Function} f
  * @param {Function} g
@@ -25,13 +26,16 @@
  *   getComposition(Math.sin, Math.asin)(x) => Math.sin(Math.acos(x))
  *
  */
-function getComposition(f,g) {
-    throw new Error('Not implemented');
+function getComposition(f, g) {
+    return function (x) {
+        return f(g(x));
+    }
+
 }
 
 
 /**
- * Returns the math power function with the specified exponent
+ * Возвращает функцию возведения в степень для переданного аргумента
  *
  * @param {number} exponent
  * @return {Function}
@@ -47,13 +51,15 @@ function getComposition(f,g) {
  *
  */
 function getPowerFunction(exponent) {
-    throw new Error('Not implemented');
+    return (num) => {
+        return Math.pow(num, exponent);
+    }
 }
 
 
 /**
- * Returns the polynom function of one argument based on specified coefficients.
- * See: https://en.wikipedia.org/wiki/Polynomial#Definition
+ * Возвращает полином на основании переданных аргументов
+ * Подробнее: https://en.wikipedia.org/wiki/Polynomial#Definition
  *
  * @params {integer}
  * @return {Function}
@@ -64,36 +70,44 @@ function getPowerFunction(exponent) {
  *   getPolynom(8)     => y = 8
  *   getPolynom()      => null
  */
-function getPolynom() {
-    throw new Error('Not implemented');
+function getPolynom(...args) {
+    return (x) => {
+        return args.length == 3 ? args[0] * x * x + args[1] * x + args[2] :
+            (args.length == 2 ? args[0] * x + args[1] : (args.length == 1 ? args[0] : null));
+    }
 }
-
-
 /**
- * Memoizes passed function and returns function
- * which invoked first time calls the passed function and then always returns cached result.
+ * Заменяет переданную функцию и возвращает функцию,
+ * которая в первый раз вызывает переданную функцию, а затем всегда возвращает результат кэширования.
  *
- * @params {Function} func - function to memoize
- * @return {Function} memoized function
+ * @params {Function} func - функция для запонимания
+ * @return {Function} запомненная функция
  *
  * @example
  *   var memoizer = memoize(() => Math.random());
- *   memoizer() => some random number  (first run, evaluates the result of Math.random())
- *   memoizer() => the same random number  (second run, returns the previous cached result)
+ *   memoizer() => любое рандомное число (при первом запуске вычисляется Math.random())
+ *   memoizer() => тоже раномное число (при втором запуске возвращается закешированный результат)
  *   ...
- *   memoizer() => the same random number  (next run, returns the previous cached result)
+ *   memoizer() => тоже рандомное число  (при всех последующих вызовах возвращается тоже закешированный результат)
  */
 function memoize(func) {
-    throw new Error('Not implemented');
+    let count = 0;
+    let cache = 0;
+    return () => {
+        if (count < 1) {
+            cache = func();
+            count++;
+            return cache;
+        }
+        return cache;
+    }
 }
 
-
 /**
- * Returns the function trying to call the passed function and if it throws,
- * retrying it specified number of attempts.
- *
- * @param {Function} func
- * @param {number} attempts
+ * Возвращает функцию, которая пытаеся вызвать переданную функцию, и,
+ * если она выбрасывает ошибку, повторяет вызов функции заданное количество раз.
+ * @param {Function} функция
+ * @param {number} количество попыток
  * @return {Function}
  *
  * @example
@@ -104,21 +118,37 @@ function memoize(func) {
  * retryer() => 2
  */
 function retry(func, attempts) {
-    throw new Error('Not implemented');
+    return function () {
+        let res = 0;
+        try {
+            res = func();
+        }
+        catch (ex) {
+            for (var index = 0; index < attempts; index++) {
+                try {
+                    res = func();
+                }
+                catch (er) {
+
+                }
+            }
+
+        }
+        return res;
+    }
+
 }
 
-
 /**
- * Returns the logging wrapper for the specified method,
- * Logger has to log the start and end of calling the specified function.
- * Logger has to log the arguments of invoked function.
- * The fromat of output log is:
+ * Возвращает логирующую обертку для указанного метода,
+ * Logger должен логировать начало и конец вызова указанной функции.
+ * Logger должен логировать аргументы вызываемой функции.
+ * Формат вывода:
  * <function name>(<arg1>, <arg2>,...,<argN>) starts
  * <function name>(<arg1>, <arg2>,...,<argN>) ends
- *
- *
- * @param {Function} func
- * @param {Function} logFunc - function to output log with single string argument
+ * 
+ * @param {Function} функция
+ * @param {Function} логирующая функция - функия для вывода логов с однис строковым аргументом
  * @return {Function}
  *
  * @example
@@ -132,13 +162,33 @@ function retry(func, attempts) {
  *
  */
 function logger(func, logFunc) {
-    throw new Error('Not implemented');
+    return (...args)=>{
+        let str = '';
+        for (let index = 0; index < args.length; index++) {
+            if (args[index] instanceof Array) {
+                str += '[';
+                for (let i = 0; i < args[index].length; i++)
+                    if ((typeof (args[index][i])).toLowerCase() == "string")
+                        str += "\"" + args[index][i] + "\",";
+                    else
+                        str += args[index][i] + ",";
+                str = str.slice(0, str.length - 1);
+                str += '],';
+            }
+            else
+                str += args[index] + ',';
+        }
+        str = str.slice(0, str.length - 1);
+        logFunc(`${func.name}(${str}) starts`);
+        let res = func.apply(this, args);
+        logFunc(`${func.name}(${str}) ends`);
+        return res;
+    }
 }
 
 
 /**
- * Return the function with partial applied arguments
- *
+ * Возвращает фуункцию с частично примененными аргументами
  * @param {Function} fn
  * @return {Function}
  *
@@ -149,15 +199,17 @@ function logger(func, logFunc) {
  *   partialUsingArguments(fn, 'a','b','c')('d') => 'abcd'
  *   partialUsingArguments(fn, 'a','b','c','d')() => 'abcd'
  */
-function partialUsingArguments(fn) {
-    throw new Error('Not implemented');
+function partialUsingArguments(fn,...args0) {
+    return (...args1)=>{
+        return fn(...args0,...args1);
+    }
 }
 
 
 /**
- * Returns the id generator function that returns next integer starting from specified number every time when invoking.
+ * Возвращает функцию IdGenerator, которая возвращает следующее целое число при каждом вызове начиная с переданного
  *
- * @param {Number} startFrom
+ * @param {Number} стартовое число
  * @return {Function}
  *
  * @example
@@ -171,9 +223,10 @@ function partialUsingArguments(fn) {
  *   getId10() => 11
  */
 function getIdGeneratorFunction(startFrom) {
-    throw new Error('Not implemented');
+    return ()=>{
+        return startFrom++;
+    }
 }
-
 
 module.exports = {
     getComposition: getComposition,

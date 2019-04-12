@@ -2,7 +2,7 @@
 
 /**************************************************************************************************
  *                                                                                                *
- * Plese read the following tutorial before implementing tasks:                                   *
+ * Перед началом работы с заданием, пожалуйста ознакомьтесь с туториалом:                         *
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer *
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object        *
  *                                                                                                *
@@ -10,7 +10,8 @@
 
 
 /**
- * Returns the rectagle object with width and height parameters and getArea() method
+ * Возвращает объект Прямоугольник (rectangle) с параметрами высота (height) и ширина (width)
+ * и методом getArea(), который возвращает площадь
  *
  * @param {number} width
  * @param {number} height
@@ -23,12 +24,17 @@
  *    console.log(r.getArea());   // => 200
  */
 function Rectangle(width, height) {
-    throw new Error('Not implemented');
+    this.width = width;
+    this.height = height;
 }
+
+Rectangle.prototype.getArea = function () {
+    return this.width * this.height;
+};
 
 
 /**
- * Returns the JSON representation of specified object
+ * Возвращает JSON представление объекта
  *
  * @param {object} obj
  * @return {string}
@@ -38,12 +44,12 @@ function Rectangle(width, height) {
  *    { width: 10, height : 20 } => '{"height":10,"width":20}'
  */
 function getJSON(obj) {
-    throw new Error('Not implemented');
+    return JSON.stringify(obj);
 }
 
 
 /**
- * Returns the object of specified type from JSON representation
+ * Возвращает объект указанного типа из представления JSON
  *
  * @param {Object} proto
  * @param {string} json
@@ -53,33 +59,36 @@ function getJSON(obj) {
  *    var r = fromJSON(Rectangle.prototype, '{"width":10, "height":20}');
  *
  */
-function fromJSON(proto, json) {
-    throw new Error('Not implemented');
+function fromJSON(proto, json) {   
+    return Object.setPrototypeOf(JSON.parse(json), proto);
 }
 
 
+
 /**
- * Css selectors builder
+ * Создатель css селекторов
  *
- * Each complex selector can consists of type, id, class, attribute, pseudo-class and pseudo-element selectors:
+ * Каждый комплексый селектор может состоять из эелемента, id, класса, атрибута, псевдо-класса и
+ * псевдо-элемента
  *
  *    element#id.class[attr]:pseudoClass::pseudoElement
  *              \----/\----/\----------/
- *              Can be several occurences
+ *              Может быть несколько вхождений
  *
- * All types of selectors can be combined using the combinators ' ','+','~','>' .
+ * Любые варианты селекторов могут быть скомбинированы с помощью ' ','+','~','>' .
  *
- * The task is to design a single class, independent classes or classes hierarchy and implement the functionality
- * to build the css selectors using the provided cssSelectorBuilder.
- * Each selector should have the stringify() method to output the string repsentation according to css specification.
+ * Задача состоит в том, чтобы создать отдельный класс, независимые классы или
+ * иерархию классов и реализовать функциональность
+ * для создания селекторов css с использованием предоставленного cssSelectorBuilder.
+ * Каждый селектор должен иметь метод stringify ()
+ * для вывода строкового представления в соответствии с спецификацией css.
  *
- * Provided cssSelectorBuilder should be used as facade only to create your own classes,
- * for example the first method of cssSelectorBuilder can be like this:
- *   element: function(value) {
- *       return new MySuperBaseElementSelector(...)...
- *   },
+ * Созданный cssSelectorBuilder должен использоваться как фасад
+ * только для создания ваших собственных классов,
+ * например, первый метод cssSelectorBuilder может быть таким:
  *
- * The design of class(es) is totally up to you, but try to make it as simple, clear and readable as possible.
+ * Дизайн класса(ов) полностью зависит от вас,
+ * но постарайтесь сделать его максимально простым, понятным и читаемым насколько это возможно.
  *
  * @example
  *
@@ -103,40 +112,194 @@ function fromJSON(proto, json) {
  *      )
  *  ).stringify()        =>    'div#main.container.draggable + table#data ~ tr:nth-of-type(even)   td:nth-of-type(even)'
  *
- *  For more examples see unit tests.
+ *  Если нужно больше примеров - можете посмотреть юнит тесты.
  */
+
+// const cssSelectorBuilder = {
+//     str:"",
+//     element: function(value) {
+//         //throw new Error('Not implemented');
+//         this.str +=''+value;
+//         return this;
+//     },
+
+//     id: function(value) {
+//         //throw new Error('Not implemented');
+//         this.str +=`#${value}`;
+//         return this;
+//     },
+
+//     class: function(value) {
+//         //throw new Error('Not implemented');
+//         this.str +=`.${value}`;
+//         return this;
+//     },
+
+//     attr: function(value) {
+//         //throw new Error('Not implemented');
+//         this.str +=`[${value}]`;
+//         return this;
+//     },
+
+//     pseudoClass: function(value) {
+//         //throw new Error('Not implemented');
+//         this.str +=`:${value}`;
+//         return this;
+//     },
+
+//     pseudoElement: function(value) {
+//         //throw new Error('Not implemented');
+//         this.str +=`::${value}`;
+//         return this;
+
+//     },
+
+//     combine: function(selector1, combinator, selector2) {
+//         //throw new Error('Not implemented');
+//         this.str +=`${selector1} ${combinator} ${selector2}`;
+//         return this;
+//     },
+//     stringify(){
+//         //throw new Error('Not implemented');
+//         let res = this.str;
+//         this.str ='';
+//         return res;
+//     }
+
+// };
+const CssSelector = (function () {
+    const extraPartsErrorMsg = 'Element, id and pseudo-element should not occur more then one time inside the selector';
+    const invalidOrderErrorMsg = 'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element';
+    const map = new WeakMap();
+
+    const State = Object.freeze({
+        ELEMENT: 0,
+        ID: 1,
+        CLASS: 2,
+        ATTR: 3,
+        PSEUDO_CLASS: 4,
+        PSEUDO_ELEMENT: 5,
+        COMBINED_SELECTOR: 10
+    });
+
+    function internal(ref) {
+        if (!map.get(ref)) {
+            map.set(ref, {});
+        }
+        return map.get(ref);
+    }
+
+    function addPart(scope, value, validState, nextState) {
+        const selector = internal(scope);
+        if (selector.alreadyCalled[validState]) {
+            throw new Error(extraPartsErrorMsg);
+        }
+        if (selector.currentState > validState) {
+            throw new Error(invalidOrderErrorMsg);
+        }
+        if (nextState) {
+            selector.alreadyCalled[validState] = true;
+        }
+        scope.selector += value;
+        selector.currentState = nextState || validState;
+        return scope;
+    }
+
+    function CssSelector(selector, state) {
+        this.selector = selector || '';
+        internal(this).currentState = state || State.ELEMENT;
+        internal(this).alreadyCalled = {};
+    }
+
+    CssSelector.prototype = {
+
+        element: function (value) {
+            return addPart(this, value, State.ELEMENT, State.ID);
+        },
+
+        id: function (value) {
+            return addPart(this, `#${value}`, State.ID, State.CLASS);
+        },
+
+        class: function (value) {
+            return addPart(this, `.${value}`, State.CLASS);
+        },
+
+        attr: function (value) {
+            return addPart(this, `[${value}]`, State.ATTR);
+        },
+
+        pseudoClass: function (value) {
+            return addPart(this, `:${value}`, State.PSEUDO_CLASS);
+        },
+
+        pseudoElement: function (value) {
+            return addPart(this, `::${value}`, State.PSEUDO_ELEMENT, State.COMBINED_SELECTOR);
+        },
+
+        combine: function (second, combinator) {
+            const combinedSelector = `${this.selector} ${combinator} ${second.selector}`;
+            return new CssSelector(combinedSelector, State.COMBINED_SELECTOR);
+        },
+
+        stringify: function () {
+            return this.selector;
+        }
+    };
+
+    return CssSelector;
+
+}());
 
 const cssSelectorBuilder = {
 
-    element: function(value) {
-        throw new Error('Not implemented');
+    element: function (value) {
+        return new CssSelector().element(value);
     },
 
-    id: function(value) {
-        throw new Error('Not implemented');
+    id: function (value) {
+        return new CssSelector().id(value);
     },
 
-    class: function(value) {
-        throw new Error('Not implemented');
+    class: function (value) {
+        return new CssSelector().class(value);
     },
 
-    attr: function(value) {
-        throw new Error('Not implemented');
+    attr: function (value) {
+        return new CssSelector().attr(value);
     },
 
-    pseudoClass: function(value) {
-        throw new Error('Not implemented');
+    pseudoClass: function (value) {
+        return new CssSelector().pseudoClass(value);
     },
 
-    pseudoElement: function(value) {
-        throw new Error('Not implemented');
+    pseudoElement: function (value) {
+        return new CssSelector().pseudoElement(value);
     },
 
-    combine: function(selector1, combinator, selector2) {
-        throw new Error('Not implemented');
+    combine: function (selector1, combinator, selector2) {
+        return selector1.combine(selector2, combinator);
     },
 };
 
+//var builder = cssSelectorBuilder;
+
+//console.log(builder.id('main').class('container').class('editable').stringify());
+//console.log(builder.element('a').attr('href$=".png"').pseudoClass('focus').stringify());
+/*console.log(builder.combine(
+         builder.element('div').id('main'),
+         '+',
+         builder.combine(
+             builder.element('table').id('data'),
+             '~',
+              builder.combine(
+                  builder.element('tr').pseudoClass('nth-of-type(even)'),
+                  ' ',
+                  builder.element('td').pseudoClass('nth-of-type(even)')
+              )
+         )
+     ).stringify() );*/ // Не решено, сначала вызывает элементы, а на обратном пути combine
+//'div#main.container.draggable + table#data ~ tr:nth-of-type(even)   td:nth-of-type(even)'
 
 module.exports = {
     Rectangle: Rectangle,
